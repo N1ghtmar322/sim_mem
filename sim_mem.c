@@ -22,7 +22,7 @@ sim_database* init_system(char exe_file_name[], char swap_file_name[], int text_
         return NULL;
     }
     for (int i = 0; i < NUM_OF_PAGES; ++i) {
-        if (i < text_size)
+        if (i < text_size/PAGE_SIZE)
             memory_sim->page_table[i].P = 1;
         else
             memory_sim->page_table[i].P = 0;
@@ -110,7 +110,7 @@ char load(sim_database* mem_sim, int address) {
         page_temp->V = 1;
         page_temp->frame_swap = next_frame;
         frames[next_frame] = page_number;
-        if (next_frame >= 4)
+        if (next_frame >= ((MEMORY_SIZE/PAGE_SIZE) - 1))
             next_frame = 0;
         else
             next_frame++;
@@ -126,6 +126,8 @@ void store(sim_database* mem_sim, int address, char value) {
         clear_system(mem_sim);
         exit(4);
     }
+    if (address < mem_sim->text_size)
+        return;
     int page_number = address >> 3;
     int offset = address & (PAGE_SIZE - 1);
     page_descriptor* page_temp = &mem_sim->page_table[page_number];
@@ -215,24 +217,25 @@ void print_page_table(sim_database* mem_sim) {
     printf("\n page table \n");
     printf("Valid\t Dirty\t Permission \t Frame_swap\n");
     for(i = 0; i < NUM_OF_PAGES; i++) {
-        printf("[%d]\t[%d]\t[%d]\t[%d]\n", mem_sim->page_table[i].V,
+        printf("[%d]\t[%d]\t[%d]\t[%d]\t[%d]\n", i, mem_sim->page_table[i].V,
         mem_sim->page_table[i].D,
         mem_sim->page_table[i].P, mem_sim->page_table[i].frame_swap);
     }
 }
 
 int check_next_frame(sim_database* sim_database) {
-    if (sim_database->page_table[next_frame * PAGE_SIZE].D == 1) {
+    if (sim_database->page_table[frames[next_frame]].D == 1) {
         char temp_buffer[PAGE_SIZE];
-        for (int i = 0; i < (SWAP_SIZE / PAGE_SIZE); i += PAGE_SIZE) {
+        for (int i = 0; i < (SWAP_SIZE / PAGE_SIZE); i++) {
             lseek(sim_database->swapfile_fd, i*PAGE_SIZE, SEEK_SET);
             if (read(sim_database->swapfile_fd, temp_buffer, PAGE_SIZE) == -1) {
                 perror("ERR");
                 return -2;
             }
-            if (strcmp(temp_buffer, "00000000") == 0)
+            char temp[PAGE_SIZE];
+            memset(temp, '0', PAGE_SIZE);
+            if (strncmp(temp_buffer, temp, PAGE_SIZE) == 0)
                 return i * PAGE_SIZE;
-
         }
         return -1;
     }
