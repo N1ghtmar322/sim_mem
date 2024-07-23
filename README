@@ -1,0 +1,36 @@
+Memory simulator
+Authored by Yuval Cohen
+323071043
+
+==Description==
+
+The program simulate ram usage while bringing pages to main memory and either checking its address value or change its value.
+
+Program DATABASE:
+sim_database = struct that stores all the programs data bases.
+page_descriptor = struct that hold page info.
+page_table = array of page_descriptor.
+main_memory = array of frames.
+
+functions:
+two main functions:
+1.load - loads a page to memory and return a certain address value.
+2.store - loads a page to memory and change the given address value.
+
+==Program Files==
+mem_sim.c- the file contain only functions
+mem_sim.h- an header file ,contain structs, declarations of functions.
+main.c- contain the main only.
+
+Makefile-to compile the program.
+==How to compile?==
+compile: gcc mem_sim.h mem_sim.c main.c -o ex4 -Wall
+run: ./ex4
+
+==Input:==
+no input
+
+==Output:==
+print functions, memory load
+
+

@@ -1,4 +1,5 @@
-#include "sim_mem.h"
+//323071043
+#include "mem_sim.h"
 
 int check_next_frame(sim_database* sim_database);
 int clear_page_swap(sim_database* sim_database, int index);
@@ -10,7 +11,6 @@ void clear_system(sim_database* mem_sim) {
     close(mem_sim->program_fd);
     close(mem_sim->swapfile_fd);
     free(mem_sim);
-    exit(3);
 }
 
 sim_database* init_system(char exe_file_name[], char swap_file_name[], int text_size, int data_size, int bss_heap_stack_size) {
